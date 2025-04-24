@@ -2,11 +2,35 @@
 using namespace std;
 
 Vector<string> allRecursianWords(int numSyllables) {
-    /* TODO: Delete this comment and the next few lines, then implement
-     * this function.
-     */
-    (void) numSyllables;
-    return { };
+    const Vector<string> vowels = {"e", "i", "u"};
+    const Vector<string> consonants = {"b", "k", "n", "r", "s", "'"};
+
+    if (numSyllables < 0) {
+        error("numSyllables must be positive");
+    }
+    if (numSyllables == 0) {
+        return {""};
+    }
+
+    Vector<string> result;
+
+    Vector<string> smallerWords = allRecursianWords(numSyllables - 1);
+
+    for (string word : smallerWords) {
+        if (word == "") {
+            for (string vowel : vowels) {
+                result.add((1, vowel));
+            }
+        }
+
+        for (string consonant : consonants) {
+            for (string vowel : vowels) {
+                result.add((1, consonant) + vowel + word);
+            }
+        }
+    }
+
+    return result;
 }
 
 

@@ -2,10 +2,62 @@
 using namespace std;
 
 Vector<Rectangle> makeTemple(const Rectangle& bounds, const TempleParameters& params) {
-    /* TODO: Delete this comment and the next few lines, then implement this function. */
-    (void) bounds;
-    (void) params;
-    return { };
+    Vector<Rectangle> parts;
+    if (params.order < 0)
+    {
+        error ("order can't be negative");
+    }
+
+    Vector<Rectangle> temple;
+
+    if (params.order == 0)
+    {
+        return temple;
+    }
+
+    Rectangle baseRect;
+    baseRect.width = bounds.width * params.baseWidth;
+    baseRect.height = bounds.height * params.baseHeight;
+    baseRect.x = bounds.x + ((bounds.width - baseRect.width) / 2);
+    baseRect.y = bounds.y + (bounds.height - baseRect.height);
+
+    Rectangle columnRect;
+    columnRect.width = bounds.width * params.columnWidth;
+    columnRect.height = bounds.height * params.columnHeight;
+    columnRect.x = bounds.x + ((bounds.width - columnRect.width) / 2);
+    columnRect.y = bounds.y + (bounds.height - (columnRect.height + baseRect.height));
+
+    temple.add(baseRect);
+    temple.add(columnRect);
+
+    Rectangle upperBounds;
+    upperBounds.x = columnRect.x;
+    upperBounds.height = params.upperTempleHeight * bounds.height;
+    upperBounds.y = columnRect.y - upperBounds.height;
+    upperBounds.width = columnRect.width;
+
+    TempleParameters paramsUpd = params;
+    paramsUpd.order --;
+
+    temple += makeTemple(upperBounds, paramsUpd);
+
+    Rectangle smallTempleBounds;
+
+    smallTempleBounds.width = bounds.width * params.smallTempleWidth;
+    smallTempleBounds.height = bounds.height * params.smallTempleHeight;
+    smallTempleBounds.x = baseRect.x;
+    smallTempleBounds.y = baseRect.y - smallTempleBounds.height;
+    temple += makeTemple(smallTempleBounds, paramsUpd);
+
+    int spacing = (baseRect.width - (smallTempleBounds.width * params.numSmallTemples)) / (params.numSmallTemples - 1);
+
+    for (int i = 0; i < (params.numSmallTemples - 1); i++)
+    {
+        smallTempleBounds.x += (smallTempleBounds.width + spacing);
+        temple += makeTemple(smallTempleBounds, paramsUpd);
+    }
+
+    return temple;
 }
 
 

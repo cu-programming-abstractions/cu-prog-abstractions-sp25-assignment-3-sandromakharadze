@@ -5,14 +5,34 @@ Vector<Point> makeMountainRange(const Point& left,
                                 const Point& right,
                                 int amplitude,
                                 double decayRate) {
-    /* TODO: Delete this comment and the next few lines, then implement this
-     * function.
-     */
-    (void) left;
-    (void) right;
-    (void) amplitude;
-    (void) decayRate;
-    return { };
+    if (left.x > right.x) {
+        error("Left point cannot be to the right of right point");
+    }
+    if (amplitude < 0) {
+        error("Amplitude must be positive");
+    }
+    if (decayRate < 0 || decayRate > 1) {
+        error("Decay rate must be between 0 and 1");
+    }
+
+    if ((right.x - left.x) <= 3) {
+        return {left, right};
+    }
+
+    int midX = (left.x + right.x) / 2;
+    int midY = (left.y + right.y) / 2;
+
+    int offset = randomInteger(-amplitude, amplitude);
+    Point midpoint = {midX, midY + offset};
+
+    int nextAmplitude = amplitude * decayRate;
+    Vector<Point> leftRange = makeMountainRange(left, midpoint, nextAmplitude, decayRate);
+    Vector<Point> rightRange = makeMountainRange(midpoint, right, nextAmplitude, decayRate);
+
+    rightRange.remove(0);
+    leftRange += rightRange;
+
+    return leftRange;
 }
 
 /* * * * * Test Cases Below This Point * * * * */
